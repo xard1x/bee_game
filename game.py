@@ -4,19 +4,27 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from pygame import *
 
-def game(): # функция игры
-    msg = QMessageBox()
+global text
+text = "Вы должны собрать 10 цветов и не столкнуться с стеной или жуком"
+
+def msg_box():    
+    msg = QMessageBox() #всплывающее окно
     msg.setIcon(QMessageBox.Information) 
     msg.setWindowTitle("Цель игры")
-    msg.setText("Вы должны собрать 10 цветов и не столкнуться с стеной или жуком")
+    msg.setText(text)
     msg.setStandardButtons(QMessageBox.Ok) 
     msg.exec_() 
 
-    global num_wall
+def game(): # функция игры
+    msg_box()
+    global text
+    text = 'Если вы не можете достать цветок нажмите Q'
+    msg_box()
+    global num_wall  #переменные для настройки
     num_wall = int(line_edit.text())
     global num_enemy
     num_enemy = int(line_edit1.text())
-    class GameSprite(sprite.Sprite):
+    class GameSprite(sprite.Sprite): #класс спрайта
         def __init__(self, image_file, x, y, speed):
             super().__init__()
             self.image = transform.scale(image.load(image_file), (50, 50))  # создание внешнего вида спрайта - картинки
@@ -26,27 +34,23 @@ def game(): # функция игры
             self.rect.y = y
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
-    class Player(GameSprite):
-    # метод для управления спрайтом
-        def update(self):
+    class Player(GameSprite): #класс игрока
+        def update(self): # метод для управления спрайтом
             keys = key.get_pressed()  # набор всех нажатых клавиш
-            # если нажата W и физическая модель не ушла за ВЕРХНЮЮ границу
             if keys[K_w] and self.rect.y > - 10:
                 self.rect.y -= self.speed
             if keys[K_s] and self.rect.y < 700 - 50:
                 self.rect.y += self.speed
-            # если нажата A и физическая модель не ушла за ЛЕВУЮ границу
             if keys[K_a] and self.rect.x > -10:
-                # двигаем его влево
                 self.rect.x -= self.speed
-            # если нажата D и физическая модель не ушла за ПРАВУЮ границу
             if keys[K_d] and self.rect.x < 1000 - 50:
-                #  двигаем его вправо
-                self.rect.x += self.speed
-    class Enemy(GameSprite):
+                self.rect.x += self.speed 
+            if keys[K_q]:
+                flower.rect.x = randint(20, 980)
+                flower.rect.y = randint(20, 680)
+    class Enemy(GameSprite):# класс врага
         direction = "left"  # начальное направление
-    # метод для автоматического передвижения
-        def update(self):
+        def update(self): # метод для автоматического передвижения
             global lost  # используем глобальную переменную
             self.rect.y += self.speed  # двигаем врага вниз
             if self.rect.y > 700:
@@ -55,35 +59,27 @@ def game(): # функция игры
                 # устанавливаем координату по Y (немного выше верхней границы)
                 self.rect.y = -50
                 # к количеству пропущенных прибавляем 1
-
-    # класс для спрайтов-стен
-    class Wall(sprite.Sprite):
+    class Wall(sprite.Sprite):  # класс для спрайтов-стен
         def __init__(self, r, g, b, x, y, width, height):
             super().__init__()
-            # параметры цвета в R G B
             self.r = r
             self.g = g
             self.b = b
-            # размеры стены
             self.width = width
             self.height = height
-            # картинка стены - прямоугольник нужных размеров и цвета
             self.image = Surface((self.width, self.height))
             self.image.fill((r, g, b))  # заливаем цветом
-            # получаем "физическую" модель стены
             self.rect = self.image.get_rect()
-            # размещаем её в нужные координаты
             self.rect.x = x
             self.rect.y = y
-        def draw_wall(self):
-            # отображает картинку в координатах физической модели
+        def draw_wall(self): # отображает картинку в координатах физической модели
             window_game.blit(self.image, (self.rect.x, self.rect.y))
 
-    flower_count = 0
-       
+    flower_count = 0 #кол-во собранных цветов
     window.close()
     window_game = display.set_mode((1000, 700))
     display.set_caption('Игра')
+
     background = transform.scale(image.load('field.jpg'), (1000, 700))
     flower = GameSprite("flower.png", randint(20, 980), randint(20, 680), 0)
     player = Player("bee_player.png", 5, 700 - 80, 4)
@@ -106,6 +102,9 @@ def game(): # функция игры
     mixer.init()
     mixer.music.load('music.mp3')
     mixer_music.play(loops= -1)
+    kick = mixer.Sound('defeat.mp3')
+    take = mixer.Sound('take.mp3')
+    win = mixer.Sound('win.mp3')
 
     font.init()
     font1 = font.SysFont("Arial", 50)
@@ -113,12 +112,7 @@ def game(): # функция игры
     win_font = font2.render("Ты выиграл!", True, (255, 255, 255))
     lose_font = font2.render("Ты проиграл!", True, (255, 0, 0))
 
-    kick = mixer.Sound('defeat.mp3')
-    take = mixer.Sound('take.mp3')
-    win = mixer.Sound('win.mp3')
-
-    
-    while game:
+    while game: #игровой цикл
         if finish != True:            
             player.update()
             monsters.update()
@@ -143,10 +137,16 @@ def game(): # функция игры
                 finish = True
                 window_game.blit(lose_font, (220, 220))
                 kick.play()
-        clock.tick(FPS)
+        else:
+            finish = False
+            flower_count = 0
+            flower.rect.x = randint(20, 980)
+            flower.rect.y = randint(20, 680)
+            time.delay(3000)
         for e in event.get():
             if e.type == QUIT:
                 game = False
+        clock.tick(FPS)
         display.update()
 
 app = QApplication([]) # создание окна
@@ -181,8 +181,6 @@ line_edit.setValidator(QIntValidator(1, 9))
 horiz_layout_3.addWidget(label_info1,alignment = Qt.AlignCenter)
 horiz_layout_3.addWidget(line_edit,alignment = Qt.AlignCenter)
 
-
-
 horiz_layout_4 = QHBoxLayout() #кнопки
 label_info2 = QLabel('<h4 style="color: rgb(255, 255, 255);">Кол-во врагов:</h4>', alignment=Qt.AlignCenter)
 label_info2.setFont(QFont('Arial', 13))
@@ -191,12 +189,10 @@ line_edit1.setValidator(QIntValidator(1, 9))
 horiz_layout_4.addWidget(label_info2,alignment = Qt.AlignCenter)
 horiz_layout_4.addWidget(line_edit1,alignment = Qt.AlignCenter)
 
-
 horiz_layout_5 = QHBoxLayout() #кнопка начать игру
 button_play = QPushButton('Начать игру')
 button_play.setFont(QFont('Arial', 20))
 horiz_layout_5.addWidget(button_play,alignment = Qt.AlignCenter)
-
 
 button_play.clicked.connect(game)
 main_layout.addLayout(horiz_layout_1)
