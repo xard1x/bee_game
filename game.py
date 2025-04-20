@@ -4,6 +4,8 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from pygame import *
 
+#первая часть
+
 global text
 text = "Вы должны собрать 10 цветов и не столкнуться с стеной или жуком"
 
