@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from pygame import *
 
-#первая часть
-
 global text
 text = "Вы должны собрать 10 цветов и не столкнуться с стеной или жуком"
 
@@ -47,9 +45,7 @@ def game(): # функция игры
                 self.rect.x -= self.speed
             if keys[K_d] and self.rect.x < 1000 - 50:
                 self.rect.x += self.speed 
-            if keys[K_q]:
-                flower.rect.x = randint(20, 980)
-                flower.rect.y = randint(20, 680)
+            
     class Enemy(GameSprite):# класс врага
         direction = "left"  # начальное направление
         def update(self): # метод для автоматического передвижения
@@ -130,6 +126,8 @@ def game(): # функция игры
                 finish = True
                 window_game.blit(win_font, (200, 200))
                 win.play()
+                
+                
             if sprite.collide_rect(player, flower):
                 flower.rect.x = randint(20, 980)
                 flower.rect.y = randint(20, 680)
@@ -139,6 +137,11 @@ def game(): # функция игры
                 finish = True
                 window_game.blit(lose_font, (220, 220))
                 kick.play()
+                player.rect.x = randint(20, 980)
+                player.rect.y = randint(20, 680)
+            if sprite.spritecollide(flower, walls_list, False):
+                flower.rect.x = randint(20, 980)
+                flower.rect.y = randint(20, 680)
         else:
             finish = False
             flower_count = 0
