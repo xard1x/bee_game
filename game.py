@@ -84,7 +84,7 @@ def game(): # функция игры
         monsters.add(monster)
     walls_list = []
     for i in range(num_wall):
-        wall = Wall(30 , 89, 69, randint(100, 880), randint(100, 200), 35, 300)
+        wall = Wall(30 , 89, 69, randint(100, 880), randint(100, 200), randint(35, 75), randint(250, 375))
         walls_list.append(wall)
         walls = sprite.Group()
         walls.add(walls_list)
@@ -139,6 +139,8 @@ def game(): # функция игры
             if sprite.spritecollide(flower, walls_list, False):
                 flower.rect.x = randint(20, 980)
                 flower.rect.y = randint(20, 680)
+            #if sprite.groupcollide(monsters, walls_list, False, False):
+            #    monsters.rect.x = randint(20, 980)
         else:
             finish = False
             flower_count = 0
