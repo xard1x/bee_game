@@ -4,6 +4,9 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from pygame import *
 from time import sleep
+import game
+
+game.play()
 
 def msg_box():    
     msg = QMessageBox() #всплывающее окно
@@ -14,6 +17,8 @@ def msg_box():
     msg.exec_() 
 
 def game(): # функция игры
+    
+
     global text
     text = 'Цель: собрать 10 цветков не косаясь жуков и стен'
     msg_box()
