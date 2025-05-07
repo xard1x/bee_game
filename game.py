@@ -127,7 +127,7 @@ def game(): # функция игры
                 finish = True
                 window_game.blit(win_font, (200, 200))
                 win.play()
-                game_boss.play()
+                #game_boss.play()
                 
             if sprite.collide_rect(player, flower):
                 flower.rect.x = randint(20, 980)
