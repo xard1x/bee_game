@@ -3,10 +3,8 @@ from random import randint
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from pygame import *
-from time import sleep
-import game
-
-game.play()
+import os
+import game_boss
 
 def msg_box():    
     msg = QMessageBox() #всплывающее окно
@@ -125,10 +123,11 @@ def game(): # функция игры
             flower.reset()
             for i in range(int(num_wall)): # num_wall должен быть строкой, конвертируемой в int
                 walls_list[i].draw_wall()
-            if flower_count == 10:
+            if flower_count == 2:
                 finish = True
                 window_game.blit(win_font, (200, 200))
                 win.play()
+                game_boss.play()
                 
             if sprite.collide_rect(player, flower):
                 flower.rect.x = randint(20, 980)
