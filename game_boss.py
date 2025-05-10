@@ -1,3 +1,46 @@
-def play():
-    print(1)
-    #player.speed = 15
+from pygame import *
+def boss(count):
+    class GameSprite(sprite.Sprite): #класс спрайта
+        def __init__(self, image_file, x, y, speed):
+            super().__init__()
+            self.image = transform.scale(image.load(image_file), (50, 50))  # создание внешнего вида спрайта - картинки
+            self.speed = speed
+            self.rect = self.image.get_rect()  # прозрачная подложка спрайта - физическая модель
+            self.rect.x = x
+            self.rect.y = y
+        def reset(self):
+            window_game.blit(self.image, (self.rect.x, self.rect.y))
+    class Player(GameSprite): #класс игрока
+        def update(self): # метод для управления спрайтом
+            keys = key.get_pressed()  # набор всех нажатых клавиш
+            if keys[K_w] and self.rect.y > - 10:
+                self.rect.y -= self.speed
+            if keys[K_s] and self.rect.y < 700 - 50:
+                self.rect.y += self.speed
+            if keys[K_a] and self.rect.x > -10:
+                self.rect.x -= self.speed
+            if keys[K_d] and self.rect.x < 1000 - 50:
+                self.rect.x += self.speed
+    print(count)
+    window_game = display.set_mode((1000, 700))
+    display.set_caption('Босс')
+    background = transform.scale(image.load('field.jpg'), (1000, 700))
+
+    clock = time.Clock()
+    FPS = 60
+    game = True
+    finish = False
+
+    player = Player("bee_player.png", 5, 700 - 80, 4)
+
+
+    while game:  # игровой цикл
+        if finish != True:
+            window_game.blit(background, (0, 0))
+            player.update()
+            player.reset()
+        for e in event.get():
+            if e.type == QUIT:
+                game = False
+        clock.tick(FPS)
+        display.update()

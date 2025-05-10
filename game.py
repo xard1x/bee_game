@@ -3,7 +3,6 @@ from random import randint
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from pygame import *
-import os
 import game_boss
 
 def msg_box():    
@@ -15,8 +14,6 @@ def msg_box():
     msg.exec_() 
 
 def game(): # функция игры
-    
-
     global text
     text = 'Цель: собрать 10 цветков не косаясь жуков и стен'
     msg_box()
@@ -117,7 +114,6 @@ def game(): # функция игры
             monsters.update()
             window_game.blit(background, (0, 0))
             flower_font = font1.render("Счёт:" + str(flower_count), True, (255, 255, 255))
-            window_game.blit(flower_font, (10, 20))
             monsters.draw(window_game)
             player.reset()
             flower.reset()
@@ -127,7 +123,9 @@ def game(): # функция игры
                 finish = True
                 window_game.blit(win_font, (200, 200))
                 win.play()
-                #game_boss.play()
+                game = False
+                mixer_music.stop()
+                game_boss.boss(num_enemy)
                 
             if sprite.collide_rect(player, flower):
                 flower.rect.x = randint(20, 980)
@@ -143,8 +141,6 @@ def game(): # функция игры
             if sprite.spritecollide(flower, walls_list, False):
                 flower.rect.x = randint(20, 980)
                 flower.rect.y = randint(20, 680)
-            #if sprite.groupcollide(monsters, walls_list, False, False):
-            #    monsters.rect.x = randint(20, 980)
         else:
             finish = False
             flower_count = 0
