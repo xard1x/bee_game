@@ -44,14 +44,10 @@ def game(): # функция игры
                 self.rect.x += self.speed 
             
     class Enemy(GameSprite):# класс врага
-        direction = "left"  # начальное направление
         def update(self): # метод для автоматического передвижения
-            global lost  # используем глобальную переменную
             self.rect.y += self.speed  # двигаем врага вниз
             if self.rect.y > 700:
-                # устанавливаем случайную координату по X
                 self.rect.x = randint(80, 1000 - 80)
-                # устанавливаем координату по Y (немного выше верхней границы)
                 self.rect.y = -50
                 # к количеству пропущенных прибавляем 1
     class Wall(sprite.Sprite):  # класс для спрайтов-стен
@@ -104,9 +100,7 @@ def game(): # функция игры
     font.init()
     font1 = font.SysFont("Arial", 50)
     font2 = font.SysFont("Arial", 80)
-    win_font = font2.render("Ты выиграл!", True, (255, 255, 255))
     lose_font = font2.render("Ты проиграл!", True, (255, 0, 0))
-    boss_text = font2.render("", True, (255, 255, 255))
 
     while game: #игровой цикл
         if finish != True:            
@@ -114,6 +108,7 @@ def game(): # функция игры
             monsters.update()
             window_game.blit(background, (0, 0))
             flower_font = font1.render("Счёт:" + str(flower_count), True, (255, 255, 255))
+            window_game.blit(flower_font, (10, 10))
             monsters.draw(window_game)
             player.reset()
             flower.reset()
@@ -121,7 +116,6 @@ def game(): # функция игры
                 walls_list[i].draw_wall()
             if flower_count == 2:
                 finish = True
-                window_game.blit(win_font, (200, 200))
                 win.play()
                 game = False
                 mixer_music.stop()

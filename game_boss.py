@@ -23,20 +23,18 @@ def boss(count):
             if keys[K_d] and self.rect.x < 1000 - 50:
                 self.rect.x += self.speed
     class Enemy_Vert(GameSprite):
+        direction = 'd'
         def update(self): # метод для автоматического передвижения
             self.rect.y += self.speed  # двигаем врага вниз
             if self.rect.y > 700:
-                # устанавливаем случайную координату по X
                 self.rect.x = randint(80, 1000 - 80)
-                # устанавливаем координату по Y (немного выше верхней границы)
                 self.rect.y = -50
     class Enemy_Horiz(GameSprite):
+        direction = 'r'
         def update(self): # метод для автоматического передвижения
             self.rect.y += self.speed  # двигаем врага вниз
             if self.rect.y > 700:
-                # устанавливаем случайную координату по X
                 self.rect.x = randint(80, 1000 - 80)
-                # устанавливаем координату по Y (немного выше верхней границы)
                 self.rect.y = -50
     print(count)
     window_game = display.set_mode((1000, 700))
@@ -49,11 +47,14 @@ def boss(count):
     finish = False
 
     player = Player("bee_player.png", 5, 700 - 80, 4)
-
+     
+    monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
 
     while game:  # игровой цикл
         if finish != True:
+            monster.update()
             window_game.blit(background, (0, 0))
+    
             player.update()
             player.reset()
         for e in event.get():
