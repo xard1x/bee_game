@@ -1,6 +1,8 @@
 from pygame import *
 from random import randint
 from pygame import sprite
+from time import sleep
+
 def boss(count):
     class GameSprite(sprite.Sprite): #класс спрайта
         def __init__(self, image_file, x, y, speed):
@@ -35,14 +37,27 @@ def boss(count):
             if self.rect.x > 1000:
                 self.rect.y = randint(80, 700 - 80)
                 self.rect.x = -50
-    class Boss(GameSprite):
+    class Boss(sprite.Sprite):
+        def __init__(self, image_file, x, y, speed):
+            super().__init__()
+            self.image = transform.scale(image.load(image_file), (100, 100))
+            self.speed = speed
+            self.rect = self.image.get_rect()  # прозрачная подложка спрайта - физическая модель
+            self.rect.x = x
+            self.rect.y = y
         def update(self):
-            print(2)
-            #if self.rect.x == 150 and self.rect.y == 100:
-            #    time.delay(4000)
-            #    self.rect.x += 700
+            self.rect.x += self.speed
+            if self.rect.x >= 850:
+                self.rect.y += self.speed
+            if self.rect.y >= 500:
+                self.rect.x -= self.speed
+            if self.rect.x >= 150 and self.rect.y >= 500:
+                self.rect.y -= self.speed
+
+
+
             #if self.rect.x == 850 and self.rect.y == 100:
-            #    time.delay(4000)
+            #    
             #    self.rect.y += 400
             #if self.rect.x == 850 and self.rect.y == 500:
             #    time.delay(4000)
@@ -64,7 +79,7 @@ def boss(count):
     finish = False
 
     player = Player("bee_player.png", 500, 350, 4)
-    boss = Boss('boss.png', 150, 100, 4)
+    boss = Boss('boss.png', 150, 100, 10)
     monsters = sprite.Group()
     monsters1 = sprite.Group()
 
