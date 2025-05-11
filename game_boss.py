@@ -1,4 +1,5 @@
 from pygame import *
+from random import randint
 def boss(count):
     class GameSprite(sprite.Sprite): #класс спрайта
         def __init__(self, image_file, x, y, speed):
@@ -21,6 +22,22 @@ def boss(count):
                 self.rect.x -= self.speed
             if keys[K_d] and self.rect.x < 1000 - 50:
                 self.rect.x += self.speed
+    class Enemy_Vert(GameSprite):
+        def update(self): # метод для автоматического передвижения
+            self.rect.y += self.speed  # двигаем врага вниз
+            if self.rect.y > 700:
+                # устанавливаем случайную координату по X
+                self.rect.x = randint(80, 1000 - 80)
+                # устанавливаем координату по Y (немного выше верхней границы)
+                self.rect.y = -50
+    class Enemy_Horiz(GameSprite):
+        def update(self): # метод для автоматического передвижения
+            self.rect.y += self.speed  # двигаем врага вниз
+            if self.rect.y > 700:
+                # устанавливаем случайную координату по X
+                self.rect.x = randint(80, 1000 - 80)
+                # устанавливаем координату по Y (немного выше верхней границы)
+                self.rect.y = -50
     print(count)
     window_game = display.set_mode((1000, 700))
     display.set_caption('Босс')
