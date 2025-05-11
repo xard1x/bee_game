@@ -55,11 +55,21 @@ def boss(count):
     monsters = sprite.Group()
     monsters1 = sprite.Group()
 
+    font2 = font.SysFont("Arial", 80)
+    lose_font = font2.render("Ты проиграл!", True, (255, 0, 0))
+
+    mixer.init()
+    #mixer.music.load('music.mp3')
+    #mixer_music.play(loops= -1)
+    kick = mixer.Sound('defeat.mp3')
+    #take = mixer.Sound('take.mp3')
+    #win = mixer.Sound('win.mp3')
+
     for i in range(count):
         monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
         monsters.add(monster)
     for i in range(count):
-        monster1 = Enemy_Horiz('bug.png', randint(80, 700 - 80), 10, randint(1, 4),)
+        monster1 = Enemy_Horiz('bug.png', 10, randint(80, 700 - 80), randint(1, 4),)
         monsters1.add(monster1)
 
     while game:  # игровой цикл
@@ -69,9 +79,18 @@ def boss(count):
             window_game.blit(background, (0, 0))
             monsters.draw(window_game)
             monsters1.draw(window_game)
-    
             player.update()
             player.reset()
+            if sprite.spritecollideany(player, monsters1) or sprite.spritecollideany(player, monsters):
+                finish = True
+                window_game.blit(lose_font, (220, 220))
+                kick.play()
+                player.rect.x = randint(20, 980)
+                player.rect.y = randint(20, 680)
+        else:
+            finish = False
+            time.delay(3000)
+                
         for e in event.get():
             if e.type == QUIT:
                 game = False
