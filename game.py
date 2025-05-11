@@ -44,16 +44,13 @@ def game(): # функция игры
                 self.rect.x += self.speed 
             
     class Enemy(GameSprite):# класс врага
-        direction = "left"  # начальное направление
         def update(self): # метод для автоматического передвижения
-            global lost  # используем глобальную переменную
             self.rect.y += self.speed  # двигаем врага вниз
             if self.rect.y > 700:
                 # устанавливаем случайную координату по X
                 self.rect.x = randint(80, 1000 - 80)
                 # устанавливаем координату по Y (немного выше верхней границы)
                 self.rect.y = -50
-                # к количеству пропущенных прибавляем 1
     class Wall(sprite.Sprite):  # класс для спрайтов-стен
         def __init__(self, r, g, b, x, y, width, height):
             super().__init__()
