@@ -35,12 +35,24 @@ def boss(count):
             if self.rect.x > 1000:
                 self.rect.y = randint(80, 700 - 80)
                 self.rect.x = -50
-    #class Boss(GameSprite):
-    #    def update(self): # метод для автоматического передвижения
-    #        self.rect.x += self.speed  # двигаем врага вниз
-    #        if self.rect.x > 1000:
-    #            self.rect.y = randint(80, 700 - 80)
-    #            self.rect.x = -50
+    class Boss(GameSprite):
+        def update(self):
+            print(2)
+            #if self.rect.x == 150 and self.rect.y == 100:
+            #    time.delay(4000)
+            #    self.rect.x += 700
+            #if self.rect.x == 850 and self.rect.y == 100:
+            #    time.delay(4000)
+            #    self.rect.y += 400
+            #if self.rect.x == 850 and self.rect.y == 500:
+            #    time.delay(4000)
+            #    self.rect.x -= 700
+            #if self.rect.x == 150 and self.rect.y == 500:
+            #    time.delay(4000)
+            #    self.rect.y -= 400
+        def reset(self):
+            window_game.blit(self.image, (self.rect.x, self.rect.y))
+            
     print(count)
     window_game = display.set_mode((1000, 700))
     display.set_caption('Босс')
@@ -51,7 +63,8 @@ def boss(count):
     game = True
     finish = False
 
-    player = Player("bee_player.png", 5, 700 - 80, 4)
+    player = Player("bee_player.png", 500, 350, 4)
+    boss = Boss('boss.png', 150, 100, 4)
     monsters = sprite.Group()
     monsters1 = sprite.Group()
 
@@ -74,9 +87,11 @@ def boss(count):
 
     while game:  # игровой цикл
         if finish != True:
+            window_game.blit(background, (0, 0))
+            boss.update()
+            boss.reset()
             monsters.update()
             monsters1.update()
-            window_game.blit(background, (0, 0))
             monsters.draw(window_game)
             monsters1.draw(window_game)
             player.update()
