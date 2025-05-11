@@ -1,5 +1,6 @@
 from pygame import *
 from random import randint
+from pygame import sprite
 def boss(count):
     class GameSprite(sprite.Sprite): #класс спрайта
         def __init__(self, image_file, x, y, speed):
@@ -47,13 +48,17 @@ def boss(count):
     finish = False
 
     player = Player("bee_player.png", 5, 700 - 80, 4)
-     
-    monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
+    monsters = sprite.Group()
+
+    for i in range(2):
+        monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
+        monsters.add(monster)
 
     while game:  # игровой цикл
         if finish != True:
-            monster.update()
+            monsters.update()
             window_game.blit(background, (0, 0))
+            monsters.draw(window_game)
     
             player.update()
             player.reset()
