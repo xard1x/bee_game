@@ -24,19 +24,23 @@ def boss(count):
             if keys[K_d] and self.rect.x < 1000 - 50:
                 self.rect.x += self.speed
     class Enemy_Vert(GameSprite):
-        direction = 'd'
         def update(self): # метод для автоматического передвижения
             self.rect.y += self.speed  # двигаем врага вниз
             if self.rect.y > 700:
                 self.rect.x = randint(80, 1000 - 80)
                 self.rect.y = -50
     class Enemy_Horiz(GameSprite):
-        direction = 'r'
         def update(self): # метод для автоматического передвижения
-            self.rect.y += self.speed  # двигаем врага вниз
-            if self.rect.y > 700:
-                self.rect.x = randint(80, 1000 - 80)
-                self.rect.y = -50
+            self.rect.x += self.speed  # двигаем врага вниз
+            if self.rect.x > 1000:
+                self.rect.y = randint(80, 700 - 80)
+                self.rect.x = -50
+    #class Boss(GameSprite):
+    #    def update(self): # метод для автоматического передвижения
+    #        self.rect.x += self.speed  # двигаем врага вниз
+    #        if self.rect.x > 1000:
+    #            self.rect.y = randint(80, 700 - 80)
+    #            self.rect.x = -50
     print(count)
     window_game = display.set_mode((1000, 700))
     display.set_caption('Босс')
@@ -49,16 +53,22 @@ def boss(count):
 
     player = Player("bee_player.png", 5, 700 - 80, 4)
     monsters = sprite.Group()
+    monsters1 = sprite.Group()
 
-    for i in range(2):
+    for i in range(count):
         monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
         monsters.add(monster)
+    for i in range(count):
+        monster1 = Enemy_Horiz('bug.png', randint(80, 700 - 80), 10, randint(1, 4),)
+        monsters1.add(monster1)
 
     while game:  # игровой цикл
         if finish != True:
             monsters.update()
+            monsters1.update()
             window_game.blit(background, (0, 0))
             monsters.draw(window_game)
+            monsters1.draw(window_game)
     
             player.update()
             player.reset()
