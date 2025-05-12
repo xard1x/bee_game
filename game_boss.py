@@ -48,18 +48,14 @@ def boss(count):
             self.vector = Vector2(1 , 1).normalize()
         def update(self):
             
-            if self.rect.y == 100 and self.rect.x >= 150:
+            if self.rect.y == 100 and self.rect.x >= 150 or self.rect.x >= 140 and self.rect.y <= 100 :
                 self.rect.x += self.speed *  self.vector.x
-                print(1)
             if self.rect.y >= 100 and self.rect.y <= 500 and  self.rect.x >= 850:
                 self.rect.y += self.speed * self.vector.y
-                print(2)
             if self.rect.y >= 505 and self.rect.x <= 850:
-                print(3)
                 self.rect.x += -self.vector.x * self.speed
             if self.rect.x <= 850 and self.rect.x <= 140 and self.rect.y <= 505:
                 self.rect.y += -self.vector.y * self.speed
-                print(4)
 
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
