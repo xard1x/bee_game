@@ -1,7 +1,8 @@
 from pygame import *
 from random import randint
 from pygame import sprite
-from time import sleep
+import os
+import sys
 
 def boss(count):
     class GameSprite(sprite.Sprite): #класс спрайта
@@ -118,9 +119,12 @@ def boss(count):
                 player.rect.x = randint(20, 980)
                 player.rect.y = randint(20, 680)
             if boss.hp <= 0:
-                window_game.blit(win_font, (220, 220))
                 win.play()
+                window_game.blit(win_font, (220, 220))
+                time.delay(3000)
                 finish = True
+                time.delay(1000)
+                os.execv(sys.executable, ['python'] + sys.argv)
         else:
             finish = False
             time.delay(3000)
