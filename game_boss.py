@@ -38,7 +38,7 @@ def boss(count):
                 self.rect.y = randint(80, 700 - 80)
                 self.rect.x = -50
     class Boss(sprite.Sprite):
-        def __init__(self, image_file, x, y, speed):
+        def __init__(self, image_file, x, y, speed, hp):
             super().__init__()
             self.image = transform.scale(image.load(image_file), (100, 100))
             self.speed = speed
@@ -46,8 +46,8 @@ def boss(count):
             self.rect.x = x
             self.rect.y = y
             self.vector = Vector2(1 , 1).normalize()
+            self.hp = hp
         def update(self):
-            
             if self.rect.y == 100 and self.rect.x >= 150 or self.rect.x >= 140 and self.rect.y <= 100 :
                 self.rect.x += self.speed *  self.vector.x
             if self.rect.y >= 100 and self.rect.y <= 500 and  self.rect.x >= 850:
@@ -56,7 +56,6 @@ def boss(count):
                 self.rect.x += -self.vector.x * self.speed
             if self.rect.x <= 850 and self.rect.x <= 140 and self.rect.y <= 505:
                 self.rect.y += -self.vector.y * self.speed
-
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
             
@@ -69,8 +68,9 @@ def boss(count):
     game = True
     finish = False
 
+    flower = GameSprite("flower.png", randint(20, 980), randint(20, 680), 0)
     player = Player("bee_player.png", 500, 350, 4)
-    boss = Boss('boss.png', 150, 100, 7)
+    boss = Boss('boss.png', 150, 100, 7, 3 * count)
     monsters = sprite.Group()
     monsters1 = sprite.Group()
 
@@ -102,6 +102,7 @@ def boss(count):
             monsters1.draw(window_game)
             player.update()
             player.reset()
+            flower.reset()
             if sprite.spritecollideany(player, monsters1) or sprite.spritecollideany(player, monsters):
                 finish = True
                 window_game.blit(lose_font, (220, 220))
