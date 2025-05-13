@@ -76,13 +76,14 @@ def boss(count):
 
     font2 = font.SysFont("Arial", 80)
     lose_font = font2.render("Ты проиграл!", True, (255, 0, 0))
+    win_font = font2.render("Ты выиграл!", True, (0, 69, 36))
 
     mixer.init()
     #mixer.music.load('music.mp3')
     #mixer_music.play(loops= -1)
     kick = mixer.Sound('defeat.mp3')
-    #take = mixer.Sound('take.mp3')
-    #win = mixer.Sound('win.mp3')
+    take = mixer.Sound('take.mp3')
+    win = mixer.Sound('win.mp3')
 
     for i in range(count):
         monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
@@ -103,12 +104,23 @@ def boss(count):
             player.update()
             player.reset()
             flower.reset()
+            if sprite.collide_rect(player, flower):
+                flower.rect.x = randint(20, 980)
+                flower.rect.y = randint(20, 680)
+                take.play()
+                boss.hp -= 3
+                print(boss.hp)
             if sprite.spritecollideany(player, monsters1) or sprite.spritecollideany(player, monsters):
                 finish = True
                 window_game.blit(lose_font, (220, 220))
+                boss.hp += 3
                 kick.play()
                 player.rect.x = randint(20, 980)
                 player.rect.y = randint(20, 680)
+            if boss.hp <= 0:
+                window_game.blit(win_font, (220, 220))
+                win.play()
+                finish = True
         else:
             finish = False
             time.delay(3000)
