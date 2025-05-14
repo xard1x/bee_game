@@ -13,6 +13,7 @@ def boss(count):
             self.rect = self.image.get_rect()  # прозрачная подложка спрайта - физическая модель
             self.rect.x = x
             self.rect.y = y
+            self.vector = Vector2(1 , 1).normalize()
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
     class Player(GameSprite): #класс игрока
@@ -59,6 +60,12 @@ def boss(count):
                 self.rect.y += -self.vector.y * self.speed
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
+
+    class Bullet(GameSprite):
+        def update(self):
+            self.rect.y += self.speed * self.vector.y
+            self.rect.x += self.speed * self.vector.x
+
             
     window_game = display.set_mode((1000, 700))
     display.set_caption('Босс')
@@ -96,6 +103,7 @@ def boss(count):
     while game:  # игровой цикл
         if finish != True:
             window_game.blit(background, (0, 0))
+            bullet.update()
             boss.update()
             boss.reset()
             monsters.update()
@@ -109,9 +117,13 @@ def boss(count):
                 flower.rect.x = randint(20, 980)
                 flower.rect.y = randint(20, 680)
                 take.play()
+                global bullet
+                bullet = Bullet('bug.png', player.rect.x, player.rect.y, 60)
+                bullet.vector.x = boss.vector.x
+                bullet.vector.y = boss.vector.y
                 boss.hp -= 3
                 print(boss.hp)
-            if sprite.spritecollideany(player, monsters1) or sprite.spritecollideany(player, monsters):
+            if sprite.spritecollideany(player, monsters1) or sprite.spritecollideany(player, monsters) or sprite.collide_rect(player, boss):
                 finish = True
                 window_game.blit(lose_font, (220, 220))
                 boss.hp += 3
@@ -123,8 +135,8 @@ def boss(count):
                 window_game.blit(win_font, (220, 220))
                 time.delay(3000)
                 finish = True
-                time.delay(1000)
-                os.execv(sys.executable, ['python'] + sys.argv)
+                #time.delay(1000)
+                #os.execv(sys.executable, ['python'] + sys.argv)
         else:
             finish = False
             time.delay(3000)
