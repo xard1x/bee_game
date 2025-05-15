@@ -17,6 +17,11 @@ def boss(count):
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
     class Player(GameSprite): #класс игрока
+        def __init__(self, player_x, player_y, player_image, player_speed):
+            super().__init__(player_x, player_y, player_image, player_speed)
+            self.reload_time = 0.9
+            self.cur_reload_time = 0
+            self.is_reloading = False
         def update(self): # метод для управления спрайтом
             keys = key.get_pressed()  # набор всех нажатых клавиш
             if keys[K_w] and self.rect.y > - 10:
@@ -27,6 +32,7 @@ def boss(count):
                 self.rect.x -= self.speed
             if keys[K_d] and self.rect.x < 1000 - 50:
                 self.rect.x += self.speed
+
     class Enemy_Vert(GameSprite):
         def update(self): # метод для автоматического передвижения
             self.rect.y += self.speed  # двигаем врага вниз
@@ -60,13 +66,32 @@ def boss(count):
                 self.rect.y += -self.vector.y * self.speed
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
-
-    class Bullet(GameSprite):
+    class Bullet(sprite.Sprite):
+        def __init__(self, start_pos, target_pos):
+            super().__init__()
+            self.image = Surface((10, 10))
+            self.image.fill(RED)
+            self.rect = self.image.get_rect(center=start_pos)
+            self.speed = 10 # Скорость пули
+            self.pos = Vector2(start_pos)
+            direction = Vector2(target_pos) - Vector2(start_pos)
+            if direction.length() > 0: 
+                self.direction = direction.normalize()
+            else:
+                self.direction = Vector2(0, 0)
         def update(self):
-            self.rect.y += self.speed * self.vector.y
-            self.rect.x += self.speed * self.vector.x
+            self.pos += self.direction * self.speed
+            self.rect.center = (int(self.pos.x), int(self.pos.y))
+            if self.rect.bottom < 0 or self.rect.top > 1000 or \
+               self.rect.right < 0 or self.rect.left > 700:
+                self.kill() # Удаляет спрайт из всех групп, в которых он состоит
 
-            
+
+    bullets = sprite.Group()
+    all_sprites = sprite.Group()
+
+    RED = (255, 0, 0)       
+
     window_game = display.set_mode((1000, 700))
     display.set_caption('Босс')
     background = transform.scale(image.load('field.jpg'), (1000, 700))
@@ -81,6 +106,7 @@ def boss(count):
     boss = Boss('boss.png', 150, 100, 7, 3 * count)
     monsters = sprite.Group()
     monsters1 = sprite.Group()
+    all_sprites.add(flower, player, boss)
 
     font2 = font.SysFont("Arial", 80)
     lose_font = font2.render("Ты проиграл!", True, (255, 0, 0))
@@ -96,33 +122,27 @@ def boss(count):
     for i in range(count):
         monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
         monsters.add(monster)
+        all_sprites.add(monster)
     for i in range(count):
         monster1 = Enemy_Horiz('bug.png', 10, randint(80, 700 - 80), randint(1, 4),)
         monsters1.add(monster1)
+        all_sprites.add(monster1)
+
+    ammo = 10
 
     while game:  # игровой цикл
         if finish != True:
             window_game.blit(background, (0, 0))
-            bullet.update()
-            boss.update()
+            all_sprites.update()
             boss.reset()
-            monsters.update()
-            monsters1.update()
             monsters.draw(window_game)
             monsters1.draw(window_game)
-            player.update()
             player.reset()
-            flower.reset()
+            flower.reset() 
             if sprite.collide_rect(player, flower):
                 flower.rect.x = randint(20, 980)
                 flower.rect.y = randint(20, 680)
                 take.play()
-                global bullet
-                bullet = Bullet('bug.png', player.rect.x, player.rect.y, 60)
-                bullet.vector.x = boss.vector.x
-                bullet.vector.y = boss.vector.y
-                boss.hp -= 3
-                print(boss.hp)
             if sprite.spritecollideany(player, monsters1) or sprite.spritecollideany(player, monsters) or sprite.collide_rect(player, boss):
                 finish = True
                 window_game.blit(lose_font, (220, 220))
@@ -144,5 +164,15 @@ def boss(count):
         for e in event.get():
             if e.type == QUIT:
                 game = False
+            if e.type == MOUSEBUTTONDOWN:
+                if ammo > 0:   
+                    if e.button == 1: # Клик левой кнопкой мыши
+                        print(ammo)
+                        ammo -= 1
+                        mouse_pos = e.pos 
+                        bullet = Bullet(player.rect.center, mouse_pos)
+                        print(bullet.rect.x)
+                        all_sprites.add(bullet)
+                        bullets.add(bullet)
         clock.tick(FPS)
         display.update()
