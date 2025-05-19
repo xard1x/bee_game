@@ -3,8 +3,13 @@ from random import randint
 from pygame import sprite
 import os
 import sys
+from time import time as timer
 
 def boss(count):
+    a = timer()
+    global direction
+    direction = ''
+
     class GameSprite(sprite.Sprite): #класс спрайта
         def __init__(self, image_file, x, y, speed):
             super().__init__()
@@ -23,6 +28,7 @@ def boss(count):
             self.cur_reload_time = 0
             self.is_reloading = False
         def update(self): # метод для управления спрайтом
+            global direction
             keys = key.get_pressed()  # набор всех нажатых клавиш
             if keys[K_w] and self.rect.y > - 10:
                 self.rect.y -= self.speed
@@ -32,6 +38,18 @@ def boss(count):
                 self.rect.x -= self.speed
             if keys[K_d] and self.rect.x < 1000 - 50:
                 self.rect.x += self.speed
+            if keys[K_LEFT]:
+                direction = 'left'
+            if keys[K_RIGHT]:
+                direction = 'right'
+            if keys[K_UP]:
+                direction = 'up'
+            if keys[K_DOWN]:
+                direction = 'down'
+        def fire():
+            bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15)
+            bullets.add(bullet)
+
 
     class Enemy_Vert(GameSprite):
         def update(self): # метод для автоматического передвижения
@@ -66,31 +84,30 @@ def boss(count):
                 self.rect.y += -self.vector.y * self.speed
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
-    class Bullet(sprite.Sprite):
-        def __init__(self, start_pos, target_pos):
-            super().__init__()
-            self.image = Surface((10, 10))
-            self.image.fill(RED)
-            self.rect = self.image.get_rect(center=start_pos)
-            self.speed = 10 # Скорость пули
-            self.pos = Vector2(start_pos)
-            direction = Vector2(target_pos) - Vector2(start_pos)
-            if direction.length() > 0: 
-                self.direction = direction.normalize()
-            else:
-                self.direction = Vector2(0, 0)
+
+    class Bullet(GameSprite):
         def update(self):
-            self.pos += self.direction * self.speed
-            self.rect.center = (int(self.pos.x), int(self.pos.y))
-            if self.rect.bottom < 0 or self.rect.top > 1000 or \
-               self.rect.right < 0 or self.rect.left > 700:
-                self.kill() # Удаляет спрайт из всех групп, в которых он состоит
+           global direction
+           if direction == 'up':    
+                if self.rect.y > 0 and self.rect.x == player.rect.x :
+                    self.rect.y -= self.speed
+                else:
+                    self.kill()
+           if direction == 'down':    
+               self.rect.y += self.speed
+           if direction == 'left':    
+               self.rect.x -= self.speed
+           if direction == 'right':    
+               self.rect.x += self.speed
+           if self.rect.y < 0 or self.rect.y > 700 or self.rect.x > 1000 or self.rect.x < 0:
+               self.kill()
+        
+
 
 
     bullets = sprite.Group()
     all_sprites = sprite.Group()
-
-    RED = (255, 0, 0)       
+     
 
     window_game = display.set_mode((1000, 700))
     display.set_caption('Босс')
@@ -134,7 +151,9 @@ def boss(count):
         if finish != True:
             window_game.blit(background, (0, 0))
             all_sprites.update()
+            bullets.update()
             boss.reset()
+            bullets.draw(window_game)
             monsters.draw(window_game)
             monsters1.draw(window_game)
             player.reset()
@@ -150,6 +169,7 @@ def boss(count):
                 kick.play()
                 player.rect.x = randint(20, 980)
                 player.rect.y = randint(20, 680)
+                print(a)
             if boss.hp <= 0:
                 win.play()
                 window_game.blit(win_font, (220, 220))
@@ -164,15 +184,8 @@ def boss(count):
         for e in event.get():
             if e.type == QUIT:
                 game = False
-            if e.type == MOUSEBUTTONDOWN:
-                if ammo > 0:   
-                    if e.button == 1: # Клик левой кнопкой мыши
-                        print(ammo)
-                        ammo -= 1
-                        mouse_pos = e.pos 
-                        bullet = Bullet(player.rect.center, mouse_pos)
-                        print(bullet.rect.x)
-                        all_sprites.add(bullet)
-                        bullets.add(bullet)
+            elif e.type == KEYDOWN:
+                if e.key == K_LEFT or e.key == K_RIGHT or e.key == K_UP or e.key == K_DOWN:
+                    Player.fire()
         clock.tick(FPS)
         display.update()
