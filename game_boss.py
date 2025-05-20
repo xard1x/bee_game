@@ -111,12 +111,13 @@ def boss(count):
     monsters1 = sprite.Group()
     all_sprites.add(flower, player, boss)
 
+    font1 = font.SysFont("Arial", 50)
     font2 = font.SysFont("Arial", 80)
     lose_font = font2.render("Ты проиграл!", True, (255, 0, 0))
 
     mixer.init()
-    #mixer.music.load('music.mp3')
-    #mixer_music.play(loops= -1)
+    mixer.music.load('music.mp3')
+    mixer_music.play(loops= -1)
     kick = mixer.Sound('defeat.mp3')
     take = mixer.Sound('take.mp3')
     win = mixer.Sound('win.mp3')
@@ -135,6 +136,10 @@ def boss(count):
     while game:  # игровой цикл
         if finish != True:
             window_game.blit(background, (0, 0))
+            ammo_font = font1.render("Патроны:" + str(ammo), True, (255, 255, 255))
+            window_game.blit(ammo_font, (10, 10))
+            boss_font = font1.render("Здоровье босса:" + str(boss.hp), True, (255, 255, 255))
+            window_game.blit(boss_font, (650, 10))
             all_sprites.update()
             bullets.update()
             boss.reset()

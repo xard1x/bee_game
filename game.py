@@ -114,7 +114,7 @@ def game(): # функция игры
             flower.reset()
             for i in range(int(num_wall)): # num_wall должен быть строкой, конвертируемой в int
                 walls_list[i].draw_wall()
-            if flower_count == 2:
+            if flower_count == 10:
                 finish = True
                 win.play()
                 game = False
