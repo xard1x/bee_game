@@ -113,7 +113,6 @@ def boss(count):
 
     font2 = font.SysFont("Arial", 80)
     lose_font = font2.render("Ты проиграл!", True, (255, 0, 0))
-    win_font = font2.render("Ты выиграл!", True, (0, 69, 36))
 
     mixer.init()
     #mixer.music.load('music.mp3')
@@ -131,7 +130,7 @@ def boss(count):
         monsters1.add(monster1)
         all_sprites.add(monster1)
 
-    ammo = 10
+    ammo = 3
 
     while game:  # игровой цикл
         if finish != True:
@@ -145,6 +144,7 @@ def boss(count):
             player.reset()
             flower.reset() 
             if sprite.collide_rect(player, flower):
+                ammo += 3
                 flower.rect.x = randint(20, 980)
                 flower.rect.y = randint(20, 680)
                 take.play()
@@ -155,14 +155,26 @@ def boss(count):
                 kick.play()
                 player.rect.x = randint(20, 980)
                 player.rect.y = randint(20, 680)
-
+            if sprite.spritecollideany(boss, bullets):
+                bullet.kill()
+                boss.hp -= 1
+                print(boss.hp)
+            collides = sprite.groupcollide(monsters, bullets, True, True)
+            for c in collides:
+                boss.hp += 1
+                monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
+                monsters.add(monster)
+                all_sprites.add(monster)
+            collides1 = sprite.groupcollide(monsters1, bullets, True, True)
+            for c in collides1:
+                boss.hp += 1
+                monster1 = Enemy_Horiz('bug.png', 10, randint(80, 700 - 80), randint(1, 4),)
+                monsters1.add(monster1)
+                all_sprites.add(monster1)
             if boss.hp <= 0:
                 win.play()
-                window_game.blit(win_font, (220, 220))
-                time.delay(3000)
-                finish = True
-                #time.delay(1000)
-                #os.execv(sys.executable, ['python'] + sys.argv)
+                time.delay(1000)
+                os.execv(sys.executable, ['python'] + sys.argv)
         else:
             finish = False
             time.delay(3000)
@@ -171,18 +183,27 @@ def boss(count):
             if e.type == QUIT:
                 game = False
             elif e.type == KEYDOWN:
-                if e.key == K_LEFT:
-                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (-1, 0))
-                    bullets.add(bullet)
-                if e.key == K_RIGHT:
-                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (1, 0))
-                    bullets.add(bullet)
-                if e.key == K_UP:
-                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (0, -1))
-                    bullets.add(bullet)
-                if e.key == K_DOWN:
-                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (0, 1))
-                    bullets.add(bullet)
+                if ammo > 0:   
+                    if e.key == K_LEFT:
+                        bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (-1, 0))
+                        bullets.add(bullet)
+                        ammo -= 1
+                        print('патроны', ammo)
+                    if e.key == K_RIGHT:
+                        bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (1, 0))
+                        bullets.add(bullet)
+                        ammo -= 1
+                        print('патроны', ammo)
+                    if e.key == K_UP:
+                        bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (0, -1))
+                        bullets.add(bullet)
+                        ammo -= 1
+                        print('патроны', ammo)
+                    if e.key == K_DOWN:
+                        bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (0, 1))
+                        bullets.add(bullet)
+                        ammo -= 1
+                        print('патроны', ammo)
 
         clock.tick(FPS)
         display.update()
