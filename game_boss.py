@@ -3,13 +3,8 @@ from random import randint
 from pygame import sprite
 import os
 import sys
-from time import time as timer
 
 def boss(count):
-    a = timer()
-    global direction
-    direction = ''
-
     class GameSprite(sprite.Sprite): #класс спрайта
         def __init__(self, image_file, x, y, speed):
             super().__init__()
@@ -46,10 +41,6 @@ def boss(count):
                 direction = 'up'
             if keys[K_DOWN]:
                 direction = 'down'
-        def fire():
-            bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15)
-            bullets.add(bullet)
-
 
     class Enemy_Vert(GameSprite):
         def update(self): # метод для автоматического передвижения
@@ -85,25 +76,20 @@ def boss(count):
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
 
-    class Bullet(GameSprite):
+    class Bullet(sprite.Sprite):
+        def __init__(self, image_file, x, y, speed, direction):
+            super().__init__()
+            self.image = transform.scale(image.load(image_file), (30, 30))
+            self.speed = speed
+            self.rect = self.image.get_rect() 
+            self.rect.x = x
+            self.rect.y = y
+            self.direction = direction
         def update(self):
-           global direction
-           if direction == 'up':    
-                if self.rect.y > 0 and self.rect.x == player.rect.x :
-                    self.rect.y -= self.speed
-                else:
-                    self.kill()
-           if direction == 'down':    
-               self.rect.y += self.speed
-           if direction == 'left':    
-               self.rect.x -= self.speed
-           if direction == 'right':    
-               self.rect.x += self.speed
-           if self.rect.y < 0 or self.rect.y > 700 or self.rect.x > 1000 or self.rect.x < 0:
-               self.kill()
-        
-
-
+            self.rect.x += self.direction[0] * self.speed
+            self.rect.y += self.direction[1] * self.speed
+            if not 0 <= self.rect.x <= 1000 or not 0 <= self.rect.y <= 700:
+                self.kill()
 
     bullets = sprite.Group()
     all_sprites = sprite.Group()
@@ -169,7 +155,7 @@ def boss(count):
                 kick.play()
                 player.rect.x = randint(20, 980)
                 player.rect.y = randint(20, 680)
-                print(a)
+
             if boss.hp <= 0:
                 win.play()
                 window_game.blit(win_font, (220, 220))
@@ -185,7 +171,18 @@ def boss(count):
             if e.type == QUIT:
                 game = False
             elif e.type == KEYDOWN:
-                if e.key == K_LEFT or e.key == K_RIGHT or e.key == K_UP or e.key == K_DOWN:
-                    Player.fire()
+                if e.key == K_LEFT:
+                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (-1, 0))
+                    bullets.add(bullet)
+                if e.key == K_RIGHT:
+                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (1, 0))
+                    bullets.add(bullet)
+                if e.key == K_UP:
+                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (0, -1))
+                    bullets.add(bullet)
+                if e.key == K_DOWN:
+                    bullet = Bullet('flower.png', player.rect.centerx, player.rect.top, 15, (0, 1))
+                    bullets.add(bullet)
+
         clock.tick(FPS)
         display.update()
