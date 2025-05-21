@@ -90,6 +90,22 @@ def boss(count):
             self.rect.y += self.direction[1] * self.speed
             if not 0 <= self.rect.x <= 1000 or not 0 <= self.rect.y <= 700:
                 self.kill()
+    
+    class Wall(sprite.Sprite):  # класс для спрайтов-стен
+        def __init__(self, r, g, b, x, y, width, height):
+            super().__init__()
+            self.r = r
+            self.g = g
+            self.b = b
+            self.width = width
+            self.height = height
+            self.image = Surface((self.width, self.height))
+            self.image.fill((r, g, b))  # заливаем цветом
+            self.rect = self.image.get_rect()
+            self.rect.x = x
+            self.rect.y = y
+        def draw_wall(self): # отображает картинку в координатах физической модели
+            window_game.blit(self.image, (self.rect.x, self.rect.y))
 
     bullets = sprite.Group()
     all_sprites = sprite.Group()
@@ -107,6 +123,11 @@ def boss(count):
     flower = GameSprite("flower.png", randint(20, 980), randint(20, 680), 0)
     player = Player("bee_player.png", 500, 350, 4)
     boss = Boss('boss.png', 150, 100, 7, 3 * count)
+
+    green_len = 10 * boss.hp
+    wall_boss_back = Wall(105, 105, 105, 350 , 10, 300 , 35)
+    wall_boss = Wall(0, 255, 0, 360 , 15, green_len , 25)
+
     monsters = sprite.Group()
     monsters1 = sprite.Group()
     all_sprites.add(flower, player, boss)
@@ -136,10 +157,10 @@ def boss(count):
     while game:  # игровой цикл
         if finish != True:
             window_game.blit(background, (0, 0))
+            wall_boss_back.draw_wall()
+            wall_boss.draw_wall()
             ammo_font = font1.render("Патроны:" + str(ammo), True, (255, 255, 255))
             window_game.blit(ammo_font, (10, 10))
-            boss_font = font1.render("Здоровье босса:" + str(boss.hp), True, (255, 255, 255))
-            window_game.blit(boss_font, (650, 10))
             all_sprites.update()
             bullets.update()
             boss.reset()
@@ -148,6 +169,9 @@ def boss(count):
             monsters1.draw(window_game)
             player.reset()
             flower.reset() 
+            if green_len > 290:
+                green_len = 280
+                wall_boss = Wall(0, 255, 0, 360 , 15, green_len , 25)   
             if sprite.collide_rect(player, flower):
                 ammo += 3
                 flower.rect.x = randint(20, 980)
@@ -157,16 +181,21 @@ def boss(count):
                 finish = True
                 window_game.blit(lose_font, (220, 220))
                 boss.hp += 3
+                green_len = 10 * boss.hp
+                wall_boss = Wall(0, 255, 0, 360 , 15, green_len , 25)
                 kick.play()
                 player.rect.x = randint(20, 980)
                 player.rect.y = randint(20, 680)
             if sprite.spritecollideany(boss, bullets):
                 bullet.kill()
                 boss.hp -= 1
-                print(boss.hp)
+                green_len = 10 * boss.hp
+                wall_boss = Wall(0, 255, 0, 360 , 15, green_len , 25)
             collides = sprite.groupcollide(monsters, bullets, True, True)
             for c in collides:
                 boss.hp += 1
+                green_len = 10 * boss.hp
+                wall_boss = Wall(0, 255, 0, 360 , 15, green_len , 25)
                 monster = Enemy_Vert('bug.png', randint(0, 1000 - 80), -40, randint(1, 4),)
                 monsters.add(monster)
                 all_sprites.add(monster)
@@ -193,22 +222,18 @@ def boss(count):
                         bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (-1, 0))
                         bullets.add(bullet)
                         ammo -= 1
-                        print('патроны', ammo)
                     if e.key == K_RIGHT:
                         bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (1, 0))
                         bullets.add(bullet)
                         ammo -= 1
-                        print('патроны', ammo)
                     if e.key == K_UP:
                         bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (0, -1))
                         bullets.add(bullet)
                         ammo -= 1
-                        print('патроны', ammo)
                     if e.key == K_DOWN:
                         bullet = Bullet('bullet.png', player.rect.centerx, player.rect.top, 15, (0, 1))
                         bullets.add(bullet)
                         ammo -= 1
-                        print('патроны', ammo)
 
         clock.tick(FPS)
         display.update()
