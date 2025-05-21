@@ -42,14 +42,12 @@ def game(): # функция игры
                 self.rect.x -= self.speed
             if keys[K_d] and self.rect.x < 1000 - 50:
                 self.rect.x += self.speed 
-            
     class Enemy(GameSprite):# класс врага
         def update(self): # метод для автоматического передвижения
-            self.rect.y += self.speed  # двигаем врага вниз
+            self.rect.y += self.speed
             if self.rect.y > 700:
                 self.rect.x = randint(80, 1000 - 80)
                 self.rect.y = -50
-                # к количеству пропущенных прибавляем 1
     class Wall(sprite.Sprite):  # класс для спрайтов-стен
         def __init__(self, r, g, b, x, y, width, height):
             super().__init__()
@@ -120,7 +118,6 @@ def game(): # функция игры
                 game = False
                 mixer_music.stop()
                 game_boss.boss(num_enemy)
-                
             if sprite.collide_rect(player, flower):
                 flower.rect.x = randint(20, 980)
                 flower.rect.y = randint(20, 680)

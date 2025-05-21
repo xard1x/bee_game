@@ -41,7 +41,6 @@ def boss(count):
                 direction = 'up'
             if keys[K_DOWN]:
                 direction = 'down'
-
     class Enemy_Vert(GameSprite):
         def update(self): # метод для автоматического передвижения
             self.rect.y += self.speed  # двигаем врага вниз
@@ -75,7 +74,6 @@ def boss(count):
                 self.rect.y += -self.vector.y * self.speed
         def reset(self):
             window_game.blit(self.image, (self.rect.x, self.rect.y))
-
     class Bullet(sprite.Sprite):
         def __init__(self, image_file, x, y, speed, direction):
             super().__init__()
@@ -90,7 +88,6 @@ def boss(count):
             self.rect.y += self.direction[1] * self.speed
             if not 0 <= self.rect.x <= 1000 or not 0 <= self.rect.y <= 700:
                 self.kill()
-    
     class Wall(sprite.Sprite):  # класс для спрайтов-стен
         def __init__(self, r, g, b, x, y, width, height):
             super().__init__()
@@ -124,6 +121,7 @@ def boss(count):
     player = Player("bee_player.png", 500, 350, 4)
     boss = Boss('boss.png', 150, 100, 7, 3 * count)
 
+    ammo = 3
     green_len = 10 * boss.hp
     wall_boss_back = Wall(105, 105, 105, 350 , 10, 300 , 35)
     wall_boss = Wall(0, 255, 0, 360 , 15, green_len , 25)
@@ -151,8 +149,6 @@ def boss(count):
         monster1 = Enemy_Horiz('bug.png', 10, randint(80, 700 - 80), randint(1, 4),)
         monsters1.add(monster1)
         all_sprites.add(monster1)
-
-    ammo = 3
 
     while game:  # игровой цикл
         if finish != True:
@@ -212,7 +208,6 @@ def boss(count):
         else:
             finish = False
             time.delay(3000)
-                
         for e in event.get():
             if e.type == QUIT:
                 game = False
